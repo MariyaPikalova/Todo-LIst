@@ -1,6 +1,7 @@
 const filter_task = document.querySelector('#filter');
 const sort_task = document.getElementById('sort-task');
-const add_task = document.getElementById('addTask')
+const add_task = document.getElementById('addTask');
+const sort_dates = document.getElementById('sort-dates');
 
 
 class TaskList {
@@ -8,8 +9,8 @@ class TaskList {
     this.tasks = JSON.parse(localStorage.getItem('TASKS'));
     if (!this.tasks) {
       this.tasks = [
-        {task: 'TASK1', date: '20-02-2019', isComplete: false},
-        {task: 'TASK2', date: '20-02-2019', isComplete: true}
+        {task: 'TASK1', date: '2019-02-01', isComplete: false},
+        {task: 'TASK2', date: '2019-02-02', isComplete: true}
       ];
     }
     this.loadTasks();
@@ -25,7 +26,10 @@ class TaskList {
     });
     filter_task.addEventListener('keyup', this.filterTasks);
     sort_task.addEventListener('click', () => {
-      this.sortTask();
+      this.sortTasks();
+      })
+    sort_dates.addEventListener('click', () => {
+      this.sortDates();
     })
   }
 
@@ -63,6 +67,7 @@ class TaskList {
       parentDiv.classList.remove('has-error');
       parentDiv1.classList.remove('has-error');
       this.tasks.push(newTask);
+      console.log(this.tasks);
       this.loadTasks();
     }
 
@@ -82,20 +87,30 @@ class TaskList {
     });
   }
 
-  sortTask(){
+  sortTasks(){
     let sortedTask = JSON.parse(localStorage.getItem('TASKS'));
     sortedTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectOne.task.localeCompare(taskObjectTwo.task);
     });
-    // console.log(sortedTask);
     let tasksLoad = sortedTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
-    // console.log(tasksLoad);
-    document.getElementById('taskList').innerHTML = tasksLoad;
-    localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+      document.getElementById('taskList').innerHTML = tasksLoad;
+      localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
 
 
-  renderTask(task, index) {
+  sortDates(){
+    let sortedDates = JSON.parse(localStorage.getItem('TASKS'));
+    sortedDates.sort(function (taskObjectOne, taskObjectTwo) {
+      return new Date(taskObjectOne.date).getTime() - new Date(taskObjectTwo.date).getTime();
+      });
+    // console.log(sortedDates);
+    let tasksLoad = sortedDates.reduce((html, task, index) => html += this.renderTask(task, index), '');
+      document.getElementById('taskList').innerHTML = tasksLoad;
+      localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+  }
+
+
+  renderTask(task,index) {
     return`
       <li class="list-group-item checkbox">
         <div class="row">
@@ -126,7 +141,7 @@ class TaskList {
 
   loadTasks() {
     let tasksLoad = this.tasks.reduce((html, task, index) => html += this.renderTask(task, index), '');
-    console.log(tasksLoad);
+    // console.log(tasksLoad);
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
