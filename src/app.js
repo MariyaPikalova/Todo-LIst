@@ -1,14 +1,15 @@
 const filterTask = document.querySelector('#filter');
-const sortTask = document.getElementById('sort-task');
+const sortTaskAz = document.getElementById('sort-task-az');
+const sortTaskZa = document.getElementById('sort-task-za');
 const addTask = document.getElementById('addTask');
-const sortDate = document.getElementById('sort-dates');
-
+const sortDate09 = document.getElementById('sort-dates-09');
+const sortDate90 = document.getElementById('sort-dates-90');
+let filteredTask = [];
 
 class TaskList
 {
   constructor() {
     this.tasks = JSON.parse(localStorage.getItem('TASKS'));
-    this.showTasks = JSON.parse(localStorage.getItem('TASKS'));
     if (!this.tasks) {
       this.tasks = [
         {task: 'TASK1', date: '2019-02-01', isComplete: false},
@@ -26,12 +27,18 @@ class TaskList
         event.target.value = '';
       }
     });
-    filterTask.addEventListener('keyup', this.filterTasks);
-    sortTask.addEventListener('click', () => {
-        this.sortTasks();
+    filterTask.addEventListener('keyup',  this.filterTasks.bind(this), false);
+    sortTaskAz.addEventListener('click', () => {
+        this.sortTasksAz();
     });
-    sortDate.addEventListener('click', () => {
-      this.sortDates();
+    sortTaskZa.addEventListener('click', () => {
+      this.sortTasksZa();
+    });
+    sortDate09.addEventListener('click', () => {
+      this.sortDates09();
+    })
+    sortDate90.addEventListener('click', () => {
+      this.sortDates90();
     })
   }
 
@@ -75,33 +82,41 @@ class TaskList
     }
   }
 
-
   filterTasks(e) {
     const searchStr = e.target.value.toLowerCase();
     let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
     console.log(jsonTask);
-    let filterTask = jsonTask.filter(function (el, task) {
-      return  (el.task.toLowerCase().indexOf(searchStr) !== -1) ? task.style.display = 'block' :   task.style.display = 'none';
+    let filterTask = jsonTask.filter(function (el) {
+      return (el.task.toLowerCase().indexOf(searchStr) !== -1)
     })
     console.log(filterTask);
-    this.tasks.push(filterTask);
-    this.loadTasks()
+    filteredTask.push(filterTask);
+    console.log(filteredTask);
+    this.loadTasks();
   }
 
-
-  sortTasks(){
+  sortTasksAz(){
     let sortedTask = JSON.parse(localStorage.getItem('TASKS'));
     sortedTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectOne.task.localeCompare(taskObjectTwo.task);
     });
+    console.log(sortedTask);
+    let tasksLoad = sortedTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    document.getElementById('taskList').innerHTML = tasksLoad;
+    localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+  }
+  sortTasksZa(){
+    let sortedTask = JSON.parse(localStorage.getItem('TASKS'));
+    sortedTask.sort(function (taskObjectOne, taskObjectTwo) {
+      return taskObjectTwo.task.localeCompare(taskObjectOne.task);
+    });
+    console.log(sortedTask);
     let tasksLoad = sortedTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
 
-
-
-  sortDates(){
+  sortDates09(){
     let sortedDates = JSON.parse(localStorage.getItem('TASKS'));
     sortedDates.sort(function (taskObjectOne, taskObjectTwo) {
       return new Date(taskObjectOne.date).getTime() - new Date(taskObjectTwo.date).getTime();
@@ -111,6 +126,17 @@ class TaskList
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
+  sortDates90(){
+    let sortedDates = JSON.parse(localStorage.getItem('TASKS'));
+    sortedDates.sort(function (taskObjectOne, taskObjectTwo) {
+      return new Date(taskObjectTwo.date).getTime() - new Date(taskObjectOne.date).getTime();
+    });
+    // console.log(sortedDates);
+    let tasksLoad = sortedDates.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    document.getElementById('taskList').innerHTML = tasksLoad;
+    localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+  }
+
 
   renderTask(task,index) {
     return`
