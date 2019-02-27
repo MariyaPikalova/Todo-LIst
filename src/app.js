@@ -4,10 +4,11 @@ const sortTaskZa = document.getElementById('sort-task-za');
 const addTask = document.getElementById('addTask');
 const sortDate09 = document.getElementById('sort-dates-09');
 const sortDate90 = document.getElementById('sort-dates-90');
+const filterDate = document.getElementById('start-date');
 let filteredTask = [];
 
-class TaskList
-{
+
+class TaskList {
   constructor() {
     this.tasks = JSON.parse(localStorage.getItem('TASKS'));
     if (!this.tasks) {
@@ -28,6 +29,7 @@ class TaskList
       }
     });
     filterTask.addEventListener('keyup',  this.filterTasks.bind(this), false);
+    filterDate.addEventListener('change', this.filterDates.bind(this), false);
     sortTaskAz.addEventListener('click', () => {
         this.sortTasksAz();
     });
@@ -36,10 +38,10 @@ class TaskList
     });
     sortDate09.addEventListener('click', () => {
       this.sortDates09();
-    })
+    });
     sortDate90.addEventListener('click', () => {
       this.sortDates90();
-    })
+    });
   }
 
 
@@ -85,54 +87,55 @@ class TaskList
   filterTasks(e) {
     const searchStr = e.target.value.toLowerCase();
     let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
-    console.log(jsonTask);
-    let filterTask = jsonTask.filter(function (el) {
-      return (el.task.toLowerCase().indexOf(searchStr) !== -1)
-    })
-    console.log(filterTask);
-    filteredTask.push(filterTask);
-    console.log(filteredTask);
-    this.loadTasks();
+       filteredTask = jsonTask.filter(function (el) {
+      return (el.task.toLowerCase().indexOf(searchStr) !== -1);
+    });
+     let filterLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    document.getElementById('taskList').innerHTML = filterLoad;
+    localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+  }
+  filterDates(e){
+    const searchDate = e.target.value;
+    let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
+    console.log(searchDate);
+    filteredTask = jsonTask.filter(function (el) {
+      return el.date.indexOf(searchDate) !== -1;
+    });
+    let filterLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    document.getElementById('taskList').innerHTML = filterLoad;
+    localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
 
   sortTasksAz(){
-    let sortedTask = JSON.parse(localStorage.getItem('TASKS'));
-    sortedTask.sort(function (taskObjectOne, taskObjectTwo) {
+    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectOne.task.localeCompare(taskObjectTwo.task);
     });
-    console.log(sortedTask);
-    let tasksLoad = sortedTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
   sortTasksZa(){
-    let sortedTask = JSON.parse(localStorage.getItem('TASKS'));
-    sortedTask.sort(function (taskObjectOne, taskObjectTwo) {
+    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectTwo.task.localeCompare(taskObjectOne.task);
     });
-    console.log(sortedTask);
-    let tasksLoad = sortedTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
 
   sortDates09(){
-    let sortedDates = JSON.parse(localStorage.getItem('TASKS'));
-    sortedDates.sort(function (taskObjectOne, taskObjectTwo) {
+    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
       return new Date(taskObjectOne.date).getTime() - new Date(taskObjectTwo.date).getTime();
     });
-    // console.log(sortedDates);
-    let tasksLoad = sortedDates.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
   sortDates90(){
-    let sortedDates = JSON.parse(localStorage.getItem('TASKS'));
-    sortedDates.sort(function (taskObjectOne, taskObjectTwo) {
+    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
       return new Date(taskObjectTwo.date).getTime() - new Date(taskObjectOne.date).getTime();
     });
-    // console.log(sortedDates);
-    let tasksLoad = sortedDates.reduce((html, task, index) => html += this.renderTask(task, index), '');
+    let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
     document.getElementById('taskList').innerHTML = tasksLoad;
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
