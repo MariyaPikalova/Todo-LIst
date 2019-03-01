@@ -28,8 +28,7 @@ class TaskList {
         event.target.value = '';
       }
     });
-    filterTask.addEventListener('keyup',  this.filterTasks.bind(this), false);
-    filterDate.addEventListener('change', this.filterDates.bind(this), false);
+
     sortTaskAz.addEventListener('click', () => {
         this.sortTasksAz();
     });
@@ -42,6 +41,8 @@ class TaskList {
     sortDate90.addEventListener('click', () => {
       this.sortDates90();
     });
+    filterTask.addEventListener('keyup',  this.filterTasks.bind(this), false);
+    filterDate.addEventListener('change', this.filterDates.bind(this), false);
   }
 
 
@@ -107,7 +108,8 @@ class TaskList {
   }
 
   sortTasksAz(){
-    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
+    let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
+    filteredTask =jsonTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectOne.task.localeCompare(taskObjectTwo.task);
     });
     let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
@@ -115,7 +117,8 @@ class TaskList {
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
   sortTasksZa(){
-    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
+    let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
+    filteredTask = jsonTask.sort(function (taskObjectOne, taskObjectTwo) {
       return taskObjectTwo.task.localeCompare(taskObjectOne.task);
     });
     let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
@@ -124,7 +127,8 @@ class TaskList {
   }
 
   sortDates09(){
-    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
+    let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
+    filteredTask = jsonTask.sort(function (taskObjectOne, taskObjectTwo) {
       return new Date(taskObjectOne.date).getTime() - new Date(taskObjectTwo.date).getTime();
     });
     let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
@@ -132,7 +136,8 @@ class TaskList {
     localStorage.setItem('TASKS', JSON.stringify(this.tasks));
   }
   sortDates90(){
-    filteredTask.sort(function (taskObjectOne, taskObjectTwo) {
+    let jsonTask = JSON.parse(localStorage.getItem('TASKS'));
+    filteredTask = jsonTask.sort(function (taskObjectOne, taskObjectTwo) {
       return new Date(taskObjectTwo.date).getTime() - new Date(taskObjectOne.date).getTime();
     });
     let tasksLoad = filteredTask.reduce((html, task, index) => html += this.renderTask(task, index), '');
